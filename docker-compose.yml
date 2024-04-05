@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+    registrator:
+        image: webnitros/registrator:latest
+        command: -internal consul://consul:8500
+        environment:
+            #CONSUL_HTTP_TOKEN: "YourConsulToken" # <--- Token consul agent if you don't use file
+            CONSUL_HTTP_TOKEN_FILE: "/run/secrets/CONSUL_AGENT_TOKEN" #  <--- Token consul agent file
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock
+        networks:
+            - consul
+        secrets:
+            -   source: CONSUL_AGENT_TOKEN
+                target: /run/secrets/CONSUL_AGENT_TOKEN
+
+networks:
+    consul:
+        external: false
+
+secrets:
+    CONSUL_AGENT_TOKEN:
+        #external: true
+        file: ./consul.token
